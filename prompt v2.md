@@ -31,8 +31,9 @@ También quiero que expliques cómo implementar roles y permisos para controlar 
 Aquí debes describir cómo se implementarán todos los módulos del sistema con operaciones CRUD completas. Incluye productos, categorías, proveedores, clientes, empleados, ventas, compras, pagos, inventario, caja y sucursales.
 Quiero que expliques cómo funciona el flujo de datos, cómo se construyen formularios, cómo se muestran listados, cómo se aplican filtros y búsquedas, y cómo se manejan relaciones entre entidades.
 
-relaciones
+
 <img width="721" height="216" alt="image" src="https://github.com/user-attachments/assets/b8177891-d7b8-42e8-8f9c-e5fb345931b0" />
+
 
 ## Lógica de Negocio e Inventario
 En esta fase debes explicar cómo se maneja la lógica del negocio dentro del sistema. Incluye el control de inventario, actualización de stock, entradas y salidas de productos, alertas de stock mínimo y cálculo de ventas y compras.
