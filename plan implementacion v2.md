@@ -1,7 +1,6 @@
 # 📋 Plan de Implementación Conciso — Sistema "Papelería"
 ## Flutter + Firebase + Provider | Android • Web • Windows
 
-> **Versión Ejecutiva** | Enfoque: Arquitectura, Escalabilidad, Producción
 
 ---
 
