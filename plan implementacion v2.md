@@ -1,17 +1,18 @@
-# 📋 Plan de Implementación Conciso — Sistema "Papelería"
+# 📋 Plan de Implementación — Sistema "Papelería Escolar"
 ## Flutter + Firebase + Provider | Android • Web • Windows
 
+> **Proyecto Escolar** | Enfoque: Arquitectura, Escalabilidad, Funcionalidad
 
 ---
 
 ## 🎯 Visión Técnica
 
 ```
-✅ Objetivo: Sistema de gestión multiplataforma para papelería
+✅ Objetivo: Sistema de gestión multiplataforma para papelería escolar
 ✅ Stack: Flutter 3.19+ | Dart 3.3+ | Firebase | Provider
-✅ Plataformas: Android (móvil) • Web (PWA) • Windows (escritorio)
+✅ Plataformas: Android (móvil) • Web • Windows (escritorio)
 ✅ Arquitectura: Capas + Feature-first + Repository Pattern
-✅ Entrega: Código modular, testeable y listo para producción
+✅ Entrega: Código modular, organizado y funcional
 ```
 
 ---
@@ -21,25 +22,25 @@
 ### Requerimientos Priorizados
 | Tipo | Esenciales | Secundarios |
 |------|-----------|-------------|
-| **Funcionales** | Auth con roles, CRUD productos, POS ventas, control de stock, reportes básicos | Multi-sucursal, CRM avanzado, facturación electrónica |
-| **No Funcionales** | <3s carga inicial, offline básico, reglas Firestore estrictas, responsive | PWA instalable, impresión térmica, sincronización en tiempo real |
+| **Funcionales** | Login con roles, CRUD productos, ventas, control de stock, reportes básicos | Múltiples sucursales, historial de clientes, facturación |
+| **No Funcionales** | <3s carga inicial, offline básico, reglas Firestore seguras, diseño responsivo | PWA, impresión de tickets, sincronización |
 
 ### Decisiones Arquitectónicas Clave
 ```
-🏗️ Patrón: Clean Architecture lite (3 capas)
+🏗️ Patrón: Clean Architecture simplificado (3 capas)
    → presentation/ (UI + Provider) 
-   → domain/ (entities + usecases) 
-   → data/ (repositories + Firebase)
+   → domain/ (entidades + casos de uso) 
+   → data/ (repositorios + Firebase)
 
 📁 Estructura: Feature-first modular
-   lib/features/{auth, inventory, sales, crm, admin}/
-   → Cada módulo autocontenido y testeable
+   lib/features/{auth, inventory, sales, clients, admin}/
+   → Cada módulo con su propia lógica
 
 🔄 Estado: Provider + ChangeNotifier
-   → Suficiente para complejidad media, migrable a futuro
+   → Suficiente para el proyecto, fácil de entender
 
-🧭 Navegación: go_router con named routes
-   → Protección por roles, deep linking, transiciones responsivas
+🧭 Navegación: go_router con rutas nombradas
+   → Protección por roles, fácil de mantener
 ```
 
 ---
@@ -52,7 +53,7 @@
 flutter doctor -v  # Verificar Android, Web, Windows
 
 # 2. IDE: VS Code + extensiones oficiales
-#    • Flutter • Dart • Firebase Tools • Pubspec Assist
+#    • Flutter • Dart • Firebase Tools
 
 # 3. Firebase CLI + proyecto
 firebase login
@@ -62,16 +63,15 @@ flutterfire configure  # Genera firebase_options.dart automático
 flutter config --enable-web --enable-windows-desktop
 
 # 5. Estructura base del proyecto
-flutter create --org com.papeleria --project-name papeleria_app .
+flutter create --org com.papelería --project-name papeleria_app .
 ```
 
 ### Configuración Mínima de Firebase
 | Servicio | Configuración | Propósito |
 |----------|--------------|-----------|
-| Authentication | Email/Password + email verification | Acceso seguro por roles |
-| Firestore | Modo producción + índices compuestos | Base de datos en tiempo real |
-| Storage | Reglas por rol + compresión cliente | Imágenes de productos/tickets |
-| Crashlytics | Habilitar en release | Monitoreo de errores |
+| Authentication | Email/Password + verificación email | Acceso seguro por roles |
+| Firestore | Modo producción + índices | Base de datos principal |
+| Storage | Reglas por rol | Imágenes de productos |
 
 ---
 
@@ -81,247 +81,370 @@ flutter create --org com.papeleria --project-name papeleria_app .
 lib/
 ├── main.dart                    # Inicialización: Firebase + Provider + Router
 ├── core/                        # Núcleo compartido
-│   ├── constants/               # Roles, permisos, UI constants
-│   ├── errors/                  # Failures + Exceptions tipados
-│   ├── utils/                   # Validators, formatters, helpers
-│   └── network/                 # Firebase wrapper + connectivity
+│   ├── constants/               # Roles, permisos, constantes UI
+│   ├── errors/                  # Manejo de errores tipados
+│   ├── utils/                   # Validadores, formateadores
+│   └── network/                 # Wrapper de Firebase
 │
 ├── features/                    # Módulos por funcionalidad
 │   ├── auth/                    # Login, registro, recuperación
 │   ├── inventory/               # Productos, categorías, stock
-│   ├── sales/                   # POS, carrito, pagos, tickets
-│   ├── crm/                     # Clientes, proveedores, historial
+│   ├── sales/                   # Punto de venta, carrito, tickets
+│   ├── clients/                 # Clientes, historial de compras
 │   └── admin/                   # Reportes, configuración, usuarios
 │
 └── shared/                      # Recursos transversales
     ├── widgets/                 # Componentes reutilizables
-    ├── providers/               # AppProvider, SyncProvider
-    ├── routes/                  # go_router config + guards
-    └── styles/                  # Tema Material 3 + spacing
+    ├── providers/               # Providers principales
+    ├── routes/                  # Configuración de rutas
+    └── styles/                  # Tema y estilos
 ```
 
 ---
+
+
+Carpetas
+
+      lib/
+      ├── main.dart
+      │
+      ├── core/
+      │   ├── constants/
+      │   │   ├── app_constants.dart
+      │   │   ├── role_constants.dart
+      │   │   └── routes_constants.dart
+      │   │
+      │   ├── errors/
+      │   │   ├── failures.dart
+      │   │   └── exceptions.dart
+      │   │
+      │   ├── utils/
+      │   │   ├── validators.dart
+      │   │   ├── formatters.dart
+      │   │   ├── helpers.dart
+      │   │   └── network_utils.dart
+      │   │
+      │   └── network/
+      │       ├── firebase_service.dart
+      │       └── connectivity_service.dart
+      │
+      ├── features/
+      │   ├── auth/
+      │   │   ├── screens/
+      │   │   │   ├── login_screen.dart
+      │   │   │   ├── register_screen.dart
+      │   │   │   └── forgot_password_screen.dart
+      │   │   ├── widgets/
+      │   │   │   ├── login_form.dart
+      │   │   │   └── register_form.dart
+      │   │   ├── providers/
+      │   │   │   └── auth_provider.dart
+      │   │   ├── models/
+      │   │   │   └── user_model.dart
+      │   │   └── repositories/
+      │   │       └── auth_repository.dart
+      │   │
+      │   ├── inventory/
+      │   │   ├── screens/
+      │   │   │   ├── products_screen.dart
+      │   │   │   ├── product_detail_screen.dart
+      │   │   │   ├── categories_screen.dart
+      │   │   │   └── stock_adjustment_screen.dart
+      │   │   ├── widgets/
+      │   │   │   ├── product_card.dart
+      │   │   │   ├── product_form.dart
+      │   │   │   ├── category_list.dart
+      │   │   │   └── stock_indicator.dart
+      │   │   ├── providers/
+      │   │   │   └── inventory_provider.dart
+      │   │   ├── models/
+      │   │   │   ├── product_model.dart
+      │   │   │   └── category_model.dart
+      │   │   └── repositories/
+      │   │       └── inventory_repository.dart
+      │   │
+      │   ├── sales/
+      │   │   ├── screens/
+      │   │   │   ├── pos_screen.dart
+      │   │   │   ├── cart_screen.dart
+      │   │   │   ├── payment_screen.dart
+      │   │   │   └── sales_history_screen.dart
+      │   │   ├── widgets/
+      │   │   │   ├── product_search_bar.dart
+      │   │   │   ├── cart_item_card.dart
+      │   │   │   ├── payment_method_selector.dart
+      │   │   │   └── ticket_preview.dart
+      │   │   ├── providers/
+      │   │   │   └── sales_provider.dart
+      │   │   ├── models/
+      │   │   │   ├── sale_model.dart
+      │   │   │   └── cart_item_model.dart
+      │   │   └── repositories/
+      │   │       └── sales_repository.dart
+      │   │
+      │   ├── clients/
+      │   │   ├── screens/
+      │   │   │   ├── clients_screen.dart
+      │   │   │   ├── client_detail_screen.dart
+      │   │   │   └── client_form_screen.dart
+      │   │   ├── widgets/
+      │   │   │   ├── client_card.dart
+      │   │   │   └── client_search.dart
+      │   │   ├── providers/
+      │   │   │   └── client_provider.dart
+      │   │   ├── models/
+      │   │   │   └── client_model.dart
+      │   │   └── repositories/
+      │   │       └── client_repository.dart
+      │   │
+      │   └── admin/
+      │       ├── screens/
+      │       │   ├── dashboard_screen.dart
+      │       │   ├── reports_screen.dart
+      │       │   ├── users_screen.dart
+      │       │   └── settings_screen.dart
+      │       ├── widgets/
+      │       │   ├── report_card.dart
+      │       │   ├── user_role_selector.dart
+      │       │   └── stats_overview.dart
+      │       ├── providers/
+      │       │   └── admin_provider.dart
+      │       ├── models/
+      │       │   └── report_model.dart
+      │       └── repositories/
+      │           └── admin_repository.dart
+      │
+      ├── shared/
+      │   ├── widgets/
+      │   │   ├── custom_button.dart
+      │   │   ├── custom_text_field.dart
+      │   │   ├── loading_widget.dart
+      │   │   ├── error_widget.dart
+      │   │   ├── empty_state_widget.dart
+      │   │   ├── confirm_dialog.dart
+      │   │   └── responsive_data_table.dart
+      │   │
+      │   ├── providers/
+      │   │   ├── app_provider.dart
+      │   │   └── sync_provider.dart
+      │   │
+      │   ├── routes/
+      │   │   ├── app_router.dart
+      │   │   └── route_guard.dart
+      │   │
+      │   └── styles/
+      │       ├── app_theme.dart
+      │       ├── app_colors.dart
+      │       └── text_styles.dart
+      │
+      └── firebase_options.dart
 
 ## 🔥 4. Firebase: Datos y Seguridad
 
 ### Modelo de Firestore (Colecciones Principales)
 ```
-📁 users/          → uid, email, role, branchId, permissions[]
+📁 users/          → uid, email, role, name, active
 📁 products/       → sku, name, price, cost, stock, minStock, categoryId
-📁 categories/     → name, iconUrl, order, parentId?
-📁 sales/          → items[], total, paymentMethod, cashierId, timestamp
-📁 stock_movements/→ productId, type, quantity, referenceId, audit trail
-📁 customers/      → name, email, totalSpent, creditLimit, points
-📁 branches/       → config, settings, multi-sucursal ready
+📁 categories/     → name, description, active
+📁 sales/          → items[], total, paymentMethod, sellerId, date
+📁 stock_movements/→ productId, type, quantity, userId, date
+📁 clients/        → name, email, phone, totalPurchases
 ```
 
 ### Reglas de Seguridad (Principios)
-```js
-// ✅ Least privilege + validación server-side
+```
+// ✅ Reglas básicas de Firestore
 // Ejemplo products/:
 allow read: if request.auth != null;  // Solo usuarios autenticados
-allow write: if get(/users/$(request.auth.uid)).data.role == 'admin';
+allow write: if get(/databases/.../users/$(request.auth.uid)).data.role == 'admin';
 
 // ✅ Transacciones para operaciones críticas (ventas/stock)
-// ✅ Auditoría: stock_movements se escribe solo vía Cloud Functions
-// ✅ Denormalización estratégica: categoryName en products para lecturas rápidas
+// ✅ stock_movements para auditoría
 ```
 
 ### Optimización de Consultas
-- Índices compuestos para: `[branchId, categoryId, stock]` y `[createdAt DESC]`
-- Paginación con `startAfterDocument()` (20-50 docs/página)
-- Proyección de campos: `.select(['name', 'price', 'stock'])`
-- Cache local con Hive para datos de solo-lectura (categorías, config)
+- Índices compuestos para búsquedas frecuentes
+- Paginación con límite de 20-50 documentos
+- Selección de campos específicos para ahorrar ancho de banda
 
 ---
 
 ## 🎨 5. UI/UX: Diseño Adaptativo
 
-### Sistema de Diseño Mínimo
+### Sistema de Diseño
 ```
-🎨 Tema: Material 3 con paleta profesional (azul primario, grises neutros)
+🎨 Tema: Material 3 con colores escolares (azul, verde, tonos neutros)
 📏 Espaciado: Base 8px (XS:4, S:8, M:16, L:24, XL:32)
-🔤 Tipografía: Roboto (títulos bold, cuerpo regular, mono para códigos)
-♿ Accesibilidad: Contraste WCAG AA, texto dinámico, navegación por teclado
+🔤 Tipografía: Roboto (títulos, cuerpo, mono para códigos)
+♿ Accesibilidad: Contraste legible, texto ajustable
 ```
 
 ### Adaptación por Plataforma
 | Plataforma | Layout | Navegación | Enfoque UX |
 |-----------|--------|-----------|-----------|
-| **Windows/Web** | Sidebar + contenido principal | Menú lateral + breadcrumbs | Productividad: tablas, atajos de teclado, multi-ventana |
-| **Android** | BottomNav + pantallas completas | BottomBar + gestos | Rapidez: búsqueda predictiva, escáner, toques mínimos |
-| **Tablet** | Grid responsive 2-3 columnas | Mixto: sidebar colapsable | Balance: información densa + interacción táctil |
+| **Windows/Web** | Sidebar + contenido | Menú lateral | Productividad: tablas, teclado |
+| **Android** | BottomNav + pantallas | Barra inferior | Rapidez: búsqueda, toques |
+| **Tablet** | Grid responsive | Mixto | Balance información+toque |
 
-### Componentes Críticos Reutilizables
-- `ResponsiveDataTable`: Sorting, pagination, export (Web/Desktop)
-- `ProductSearchBar`: Búsqueda predictiva con debounce 300ms
-- `StockIndicator`: Visual de estado (✅ suficiente / ⚠️ bajo / ❌ agotado)
-- `RoleAwareWidget`: Muestra/oculta UI según permisos del usuario
-- `LoadingSkeleton`: Feedback visual durante cargas asíncronas
+### Componentes Reutilizables
+- `DataTable`: Tablas con ordenamiento y paginación
+- `SearchBar`: Búsqueda con debounce
+- `StockIndicator`: Indicador visual de stock (verde/amarillo/rojo)
+- `LoadingWidget`: Feedback durante cargas
+- `CustomDialog`: Confirmaciones estilizadas
 
 ---
 
-## 🔐 6. Autenticación y Roles (RBAC)
+## 🔐 6. Autenticación y Roles
 
-### Flujo de Auth Esencial
+### Flujo de Autenticación
 ```
-1. Login → Firebase Auth + validación local de formularios
-2. Verificación → authStateChanges() + redirección por rol
-3. Sesión → Persistencia automática de Firebase + limpieza al logout
-4. Recuperación → Email link + validación de fortaleza de contraseña
+1. Login → Firebase Auth + validación de formularios
+2. Verificación → Ver estado de autenticación
+3. Sesión → Persistencia automática
+4. Recuperación → Enlace al email
 ```
 
-### Matriz de Permisos (RBAC)
-| Acción | Admin | Cajero | Empleado | Auditor |
-|--------|-------|--------|----------|---------|
-| CRUD Productos | ✅ | ❌ | 📖 | 📖 |
-| Ajustar Stock | ✅ | 🔄(ventas) | 🔄(recepción) | 📖 |
-| Realizar Ventas | ✅ | ✅ | ❌ | ❌ |
-| Ver Reportes Financieros | ✅ | ❌ | ❌ | ✅ |
-| Gestionar Usuarios | ✅ | ❌ | ❌ | ❌ |
+### Matriz de Permisos
+| Acción | Admin | Cajero | Empleado |
+|--------|-------|--------|----------|
+| CRUD Productos | ✅ | ❌ | ❌ |
+| Ajustar Stock | ✅ | ❌ | ❌ |
+| Realizar Ventas | ✅ | ✅ | ❌ |
+| Ver Reportes | ✅ | ❌ | ❌ |
+| Gestionar Usuarios | ✅ | ❌ | ❌ |
 
 ### Implementación Técnica
 ```dart
-// 1. Definir roles y permisos en constants/role_constants.dart
-enum AppRole { admin, cashier, employee, auditor }
-const rolePermissions = { AppRole.cashier: {'sales:create', 'products:read'} };
+// 1. Definir roles
+enum AppRole { admin, cashier, employee }
 
-// 2. Middleware de rutas (go_router)
-RouteGuard(allowedRoles: [AppRole.admin]) → redirige si no tiene permiso
+// 2. Protección de rutas (go_router)
+RouteGuard(allowedRoles: [AppRole.admin])
 
-// 3. Validación en UI y backend
-context.can('products:delete') → muestra/oculta botón
-Firestore rules → valida permisos a nivel de servidor (nunca confiar en cliente)
+// 3. Validación en UI
+if (currentUser.role == 'admin') showAdminButton();
 ```
 
 ---
 
 ## 📦 7. Módulos CRUD: Patrón Estándar
 
-### Flujo Genérico para Cualquier Entidad
+### Flujo Genérico
 ```
 📋 Listado: 
-   • Query paginada con filtros + búsqueda (debounce 300ms)
-   • DataTable responsive + acciones contextuales por rol
-   • Empty state con CTA para crear primer registro
+   • Consulta paginada con filtros
+   • Tarjeta o tabla según plataforma
+   • Botón para crear nuevo
 
 ✏️ Formulario (Crear/Editar):
-   • Validación en tiempo real + feedback por campo
-   • Guardado borrador local (SharedPreferences)
-   • Confirmación antes de cambios críticos
+   • Validación en tiempo real
+   • Guardado al enviar
+   • Confirmación de cambios
 
 🗑️ Eliminación:
-   • Soft delete: isActive = false (no borrar físicamente)
-   • Auditoría: registrar quién, cuándo y por qué
-   • Diálogo de confirmación con resumen de impacto
+   • Soft delete (isActive = false)
+   • Diálogo de confirmación
 ```
 
-### Módulo Crítico: POS (Ventas)
+### Módulo Principal: Punto de Venta
 ```
-🔄 Transacción Atómica en Firestore:
-1. Crear documento en sales/ con items y totales
-2. Decrementar stock en products/ (validar >= 0)
-3. Registrar movimiento en stock_movements/ (auditoría)
-4. Actualizar customer.totalSpent si aplica
-→ Todo en runTransaction() para consistencia
+🔄 Transacción en Firestore:
+1. Crear documento en sales/ con items
+2. Actualizar stock en products/ (validar suficiente)
+3. Registrar movimiento en stock_movements/
+→ Todo en transacción para consistencia
 
-⚡ Optimizaciones POS:
-• Búsqueda predictiva por nombre/SKU/código de barras
-• Carrito con actualización optimista (UI inmediata, sync después)
-• Atajos de teclado (Web/Desktop): F1=buscar, F2=pagar, ESC=cancelar
-• Modo offline básico: guardar venta local + sincronizar al reconectar
+⚡ Optimizaciones:
+• Búsqueda por nombre/SKU
+• Carrito con actualización inmediata
+• Atajos de teclado básicos
 ```
 
 ---
 
 ## ⚙️ 8. Lógica de Negocio e Inventario
 
-### Reglas de Negocio Críticas
+### Reglas de Negocio
 ```
-✅ Stock: No negativo (excepto configuración "permitir sobreventa")
-✅ Precios: Venta > Costo (advertencia si margen < umbral configurable)
-✅ Descuentos: Máximo por rol + validación de total >= costo
-✅ Caja: Validar (inicial + ventas - retiros) == final con tolerancia
-✅ Auditoría: Todo movimiento de stock registra who/when/why
+✅ Stock: No puede ser negativo
+✅ Precios: Precio de venta > costo
+✅ Descuentos: Máximo 30% para cajeros
+✅ Auditoría: Registrar todo cambio de stock
 ```
 
-### Estrategia Offline-First (Básica)
+### Estrategia Offline (Básica)
 ```
-📥 Lecturas: Cache local con Hive + invalidación por snapshot de Firestore
-📤 Escrituras: Cola local (Hive) + sincronización automática al reconectar
-⚠️ Conflictos: "Última escritura gana" con timestamp de servidor
-🔔 Feedback: Indicador visual de estado (🟢 Online / 🟡 Sync / 🔴 Offline)
+📥 Lecturas: Cache local simple
+📤 Escrituras: Queue local + sincronización al reconectar
+🔔 Indicador visual: Ícono de estado de conexión
 ```
 
 ---
 
 ## 🚀 9. Optimización y Buenas Prácticas
 
-### Rendimiento Clave
+### Rendimiento
 ```
 ⚡ Flutter UI:
-• const constructors + Selector<T,R> para evitar rebuilds innecesarios
-• ListView.builder para listas largas + cached_network_image para assets
+• const constructors
+• ListView.builder para listas largas
 
 ⚡ Firestore:
-• Proyectar campos necesarios: .select(['name', 'price'])
-• Índices compuestos para queries frecuentes
-• Count aggregation en lugar de leer todos los docs para contar
+• Seleccionar campos necesarios
+• Índices para queries comunes
 
 ⚡ Memoria:
-• Dispose() de StreamSubscription en providers
-• Limitar snapshot listeners activos (solo sucursal actual)
-• compute() para procesamiento pesado (PDF, reportes)
+• Dispose() de streams
+• Limitar listeners activos
 ```
 
 ### Calidad de Código
 ```
 🧹 Estándares:
-• very_good_analysis en analysis_options.yaml (linting estricto)
-• Dartdoc en APIs públicas + README.md por módulo
-• Manejo de errores tipado: Failure subclasses + mensajes amigables
+• Código limpio y comentado
+• Documentación básica
+• Manejo de errores amigable
 
-🧪 Testing:
-• Unit tests: domain/ (usecases, entities) → 80% cobertura
-• Widget tests: componentes UI críticos (forms, validation)
-• Integration tests: flujos completos con Firebase Emulator Suite
+🧪 Testing básico:
+• Pruebas unitarias para lógica importante
+• Pruebas de widgets críticos
 ```
 
 ---
 
 ## 🧪 10. Pruebas y Despliegue
 
-### Estrategia de Testing Mínima
+### Estrategia de Testing
 | Tipo | Enfoque | Herramientas |
 |------|---------|-------------|
-| **Unit** | Lógica pura (validadores, usecases) | test + mockito |
-| **Widget** | Interacción UI, estados visuales | flutter_test |
-| **Integration** | Flujos completos (login → venta → sync) | integration_test + Firebase Emulator |
-| **Manual** | Matriz de dispositivos + escenarios de red | Firebase Test Lab + dispositivos reales |
+| **Unit** | Validadores, cálculos | test |
+| **Widget** | Componentes UI | flutter_test |
+| **Integration** | Flujos completos | integration_test |
 
 ### Checklist de Despliegue
 ```
-✅ Seguridad: Reglas Firestore en producción, App Check habilitado, datos de prueba eliminados
-✅ Rendimiento: flutter build --analyze-size, web-renderer canvaskit, caching headers
-✅ Experiencia: Íconos/splash por plataforma, deep links configurados, accesibilidad validada
-✅ Legal: Política de privacidad + términos en ajustes, backup automático de Firestore configurado
+✅ Seguridad: Reglas Firestore configuradas
+✅ Rendimiento: Build optimizado por plataforma
+✅ Experiencia: Íconos y splash screens
+✅ Legal: Política básica de privacidad
 ```
 
 ### Builds por Plataforma
 ```bash
 # Android: 
-flutter build appbundle --release --obfuscate --split-debug-info=build/symbols
+flutter build apk --release
 
 # Web: 
-flutter build web --release --web-renderer canvaskit && firebase deploy --only hosting
+flutter build web --release
 
 # Windows: 
-flutter build windows --release + empaquetado con Inno Setup/MSIX
+flutter build windows --release
 ```
 
 ---
 
-## 📎 Anexo: Dependencias Esenciales (`pubspec.yaml`)
+## 📎 Anexo: Dependencias Esenciales
 
 ```yaml
 dependencies:
@@ -338,7 +461,7 @@ dependencies:
   # UI & Utils
   cached_network_image: ^3.3.1
   intl: ^0.19.0          # Formato moneda/fechas
-  flutter_svg: ^2.0.9    # Íconos escalables
+  flutter_svg: ^2.0.9    # Íconos
   skeletonizer: ^1.4.1   # Loading states
   
   # Local Storage
@@ -351,18 +474,16 @@ dependencies:
   
   # Quality
   flutter_lints: ^3.0.1
-  logger: ^2.0.2+1       # Logging estructurado
 ```
 
 ---
 
-> ✅ **Próximo Paso**: Con este plan aprobado, iniciar desarrollo con:  
-> 1. Estructura de carpetas + `pubspec.yaml` configurado  
-> 2. Inicialización de Firebase + `go_router` base  
-> 3. Módulo de autenticación como prueba de concepto  
+> ✅ **Próximo Paso**: Iniciar desarrollo con:  
+> 1. Estructura de carpetas  
+> 2. Configuración de Firebase  
+> 3. Módulo de autenticación  
 >   
-> *¿Procedemos con la generación de código para el módulo de autenticación?* 🚀
-
+> *¿Procedemos con la implementación del módulo de autenticación?* 🚀
 
 ## Prompt
 
